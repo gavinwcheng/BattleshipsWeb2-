@@ -1,14 +1,10 @@
-<% if @player && @player.size > 0 %>
+<% if @player %>
   Welcome to Battleships, <%= @player %>! <br>
-  <a href = '/start_the_game'>Start the game</a>
+  <a href='/place_ships'>Now place your ships</a>
 <% else %>
-  <%if @player && @player.size == 0%>
-  You did not enter a name.
-  <%end%>
-  <form>
+  <form action="/new_player" method='post'>
     What's your name?
-    <input type="text" name="name">
+    <input type="text" name="name" required>
     <input type="submit" value="submit">
   </form>
-
 <% end %>

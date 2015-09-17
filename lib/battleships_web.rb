@@ -1,13 +1,9 @@
 require 'sinatra/base'
 require_relative 'board'
 
-$board = Board.new(Cell)
-ship = Ship.new(3)
-$board.place(ship, :C3, :vertically)
-
 class Battle_ship_september < Sinatra::Base
 
-  #enable :sessions
+  enable :sessions
 
   set :views, proc { File.join(root, '..', 'views')}
 
@@ -15,15 +11,38 @@ class Battle_ship_september < Sinatra::Base
     erb :index
   end
 
-  get '/new_game' do
-    @player = params[:name]
-    # @ship = Ship.new(3)
-    # $board.place(@ship, :A3, :vertically)
+  get '/new_player' do
+    @player = session[:name]
     erb :new_player
   end
 
+  post '/new_player' do
+    session[:name] = params[:name]
+    redirect '/new_player'
+  end
+
+  get '/place_ships' do
+    session[:board] = Board.new(Cell) if session[:board].nil?
+    if session[:size] && session[:coord] && session[:direction]
+      @size = session[:size].to_i
+      @coord = session[:coord].to_sym
+      @direction = session[:direction].to_sym
+      @ship = Ship.new(@size) if @size
+      session[:board].place(@ship, @coord, @direction)
+    end
+    @board = session[:board]
+    @grid = @board.print_table
+    erb :place_ships
+  end
+
+  post '/place_ships' do
+    session[:coord] = params[:coord]
+    session[:size] = params[:size]
+    session[:direction] = params[:direction]
+    redirect '/place_ships'
+  end
+
   get '/start_the_game' do
-    # @board = Board.new(Cell
     if params[:coordinate].nil?
       erb :start_the_game
     else
@@ -34,10 +53,6 @@ class Battle_ship_september < Sinatra::Base
     end
   end
 
-    get '/start_the_game/shooting' do
-
-      p $board.print_table
-    end
 
 
   # start the server if ruby file executed directly
