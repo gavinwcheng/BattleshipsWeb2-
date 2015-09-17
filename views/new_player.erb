@@ -1,6 +1,6 @@
 <% if @player %>
   Welcome to Battleships, <%= @player %>! <br>
-  <a href='/place_ships'>Now place your ships</a>
+  <a href='/new_board'>Now place your ships</a>
 <% else %>
   <form action="/new_player" method='post'>
     What's your name?
